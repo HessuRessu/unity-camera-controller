@@ -33,6 +33,12 @@ namespace Pihkura.Camera
         /// </summary>
         public int behaviourIndex = 0;
 
+        
+        /// <summary>
+        /// Should this controller use input based behaviour rotation with configured rotation key?
+        /// </summary>
+        public bool useInputBehaviourRotation = false;
+
         /// <summary>
         /// The target Transform the camera follows or looks at.
         /// </summary>
@@ -240,7 +246,8 @@ namespace Pihkura.Camera
             this.inputControlManager.Move(this.data);
             this.inputControlManager.Zoom(this.data);
             this.inputControlManager.Rotate(this.data);
-            this.inputControlManager.Control(this);
+            if (this.useInputBehaviourRotation)
+                this.inputControlManager.Control(this);
         }
     }
 }
