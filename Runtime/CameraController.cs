@@ -1,26 +1,31 @@
-    using UnityEngine;
-    using Pihkura.Camera.Behaviour;
-    using Pihkura.Camera.Control;
-    using Pihkura.Camera.Core;
-    using UnityEngine.InputSystem;
+using UnityEngine;
+using Pihkura.Camera.Behaviour;
+using Pihkura.Camera.Control;
+using Pihkura.Camera.Core;
+using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
-    namespace Pihkura.Camera
+namespace Pihkura.Camera
     {
 
         /// <summary>
         /// Camera input gate, will control if camera is reactive to input or not.
         /// </summary>
-        public static class CameraInputGate
+        public static class InputGate
         {
-            private static int _focusCount;
+            private static readonly HashSet<object> _owners = new();
 
-            public static bool HasFocus => _focusCount > 0;
+            public static bool HasFocus => _owners.Count > 0;
 
-            public static void Push()
-                => _focusCount++;
+            public static bool Push(object owner)
+            {
+                return _owners.Add(owner); // false jos oli jo olemassa
+            }
 
-            public static void Pop()
-                => _focusCount = Mathf.Max(0, _focusCount - 1);
+            public static bool Pop(object owner)
+            {
+                return _owners.Remove(owner);
+            }
         }
 
         /// <summary>
@@ -170,7 +175,7 @@
                 this.dt = Time.unscaledDeltaTime;
                 this.OnUpdateBegin();
                 this.UpdateRays();
-                if (this.useCameraInputGate && CameraInputGate.HasFocus)
+                if (this.useCameraInputGate && InputGate.HasFocus)
                     return;
                 
                 this.HandleInput();
