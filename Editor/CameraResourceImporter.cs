@@ -19,7 +19,7 @@ public static class CameraResourceImporter
     /// <summary>
     /// Path used when developing the package locally (under the Assets folder).
     /// </summary>
-    private const string DevelopmentAssetsPath = "Assets/Core/unity-camera-controller/Runtime/Assets/";
+    private const string DevelopmentAssetsPath = "Assets/Core/UI/unity-camera-controller/Runtime/Assets/";
 
     /// <summary>
     /// Path used when the package is installed via UPM.
