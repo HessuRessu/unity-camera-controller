@@ -46,6 +46,11 @@ namespace Pihkura.Camera.Behaviour
         public virtual bool Initialize(Transform target)
         {
             this.data.target = target;
+            this.data.yaw = this.data.targetYaw = this.data.current.eulerAngles.y;
+            this.data.pitch = this.data.targetPitch = this.data.current.eulerAngles.x;
+            this.data.effectivePitch = this.data.pitch;
+            this.data.yawVelocity = 0f;
+            this.data.pitchVelocity = 0f;
             return true;
         }
 
