@@ -62,10 +62,5 @@ namespace Pihkura.Camera.Behaviour
         {
             // Rotation handled in HandleMovement
         }
-
-        public override void HandleZoom(float dt)
-        {
-
-        }
     }
 }

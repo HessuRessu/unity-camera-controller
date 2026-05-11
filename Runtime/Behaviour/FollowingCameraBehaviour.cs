@@ -15,7 +15,7 @@ namespace Pihkura.Camera.Behaviour
         {
             if (target == null)
                 return false;            
-            this.configuration.heightOffset = 0f;
+            this.configuration.heightOffset = 2f;
             return base.Initialize(target);
         }
 
@@ -39,7 +39,31 @@ namespace Pihkura.Camera.Behaviour
             else
             {
                 CameraUtils.HandleCameraCollision(configuration, data, ref desiredPosition);
-                this.data.next.position = Vector3.SmoothDamp(this.data.current.position, desiredPosition + (Vector3.up * this.configuration.heightOffset), ref this.data.moveVelocity, this.configuration.moveSmoothTime, float.PositiveInfinity, dt);
+
+                Vector3 targetPosition = desiredPosition + (Vector3.up * this.configuration.heightOffset);
+
+                // NOTE:
+                // Full camera Y smoothing feels sluggish and non-responsive.
+                // Instead stabilize ONLY the source height before camera solve.
+                // This removes low-angle micro jitter while preserving responsive camera movement.
+
+                this.data.origin.x = this.data.target.position.x;
+                this.data.origin.z = this.data.target.position.z;
+
+                this.data.origin.y = Mathf.Lerp(
+                    this.data.origin.y,
+                    this.data.target.position.y,
+                    dt * 8f);
+
+                targetPosition = this.data.origin + offset + (Vector3.up * this.configuration.heightOffset);
+
+                this.data.next.position = Vector3.SmoothDamp(
+                    this.data.current.position,
+                    targetPosition,
+                    ref this.data.moveVelocity,
+                    this.configuration.moveSmoothTime,
+                    float.PositiveInfinity,
+                    dt);
             }
             float t = 1f - Mathf.Exp(-dt / Mathf.Max(this.configuration.rotSmoothTime, 0.0001f));
             this.data.next.rotation = Quaternion.Slerp(this.data.current.rotation, rotation, t);
