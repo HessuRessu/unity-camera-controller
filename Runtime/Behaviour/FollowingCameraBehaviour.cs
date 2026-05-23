@@ -33,7 +33,7 @@ namespace Pihkura.Camera.Behaviour
 
             if (Vector3.Distance(this.configuration.forwardRay.Point, this.data.target.position) > 10f)
             {
-                this.data.next.position = Vector3.MoveTowards(this.data.current.position, desiredPosition + (Vector3.up * this.configuration.heightOffset), dt * 100f);
+                this.data.next.position = Vector3.MoveTowards(this.data.current.position, desiredPosition + (Vector3.up * this.configuration.heightOffset), dt * 400f);
                 CameraUtils.HandleCameraCollision(configuration, data, ref this.data.next.position);
             }
             else
