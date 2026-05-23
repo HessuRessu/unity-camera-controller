@@ -103,7 +103,11 @@ namespace Pihkura.Camera.Behaviour
         {
             if (Mathf.Abs(data.zoomInput) > 0.0001f)
             {
-                data.distance -= data.zoomInput * configuration.zoomSpeed * data.speedRatio;
+                if (configuration.invertZoom)
+                    data.distance += data.zoomInput * configuration.zoomSpeed * data.speedRatio;
+                else
+                    data.distance -= data.zoomInput * configuration.zoomSpeed * data.speedRatio;
+
                 data.distance = Mathf.Clamp(data.distance, configuration.minDistance, configuration.maxDistance);
                 this.moving = true;
             }

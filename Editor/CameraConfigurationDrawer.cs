@@ -35,6 +35,7 @@ public class CameraConfigurationDrawer : PropertyDrawer
             EditorGUILayout.PropertyField(property.FindPropertyRelative("minDistance"));
             EditorGUILayout.PropertyField(property.FindPropertyRelative("maxDistance"));
             EditorGUILayout.PropertyField(property.FindPropertyRelative("zoomSpeed"));
+            EditorGUILayout.PropertyField(property.FindPropertyRelative("invertZoom"));
             EditorGUILayout.EndVertical();
         }
 

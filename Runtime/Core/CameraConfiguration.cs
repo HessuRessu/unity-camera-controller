@@ -38,6 +38,10 @@ namespace Pihkura.Camera.Core
         /// Speed at which camera zooms in/out.
         /// </summary>
         public float zoomSpeed = 1000f;
+        /// <summary>
+        /// Should we invert zoom behaviour.
+        /// </summary>
+        public bool invertZoom = false;
 
         [Header("Rotation")]
         /// <summary>
