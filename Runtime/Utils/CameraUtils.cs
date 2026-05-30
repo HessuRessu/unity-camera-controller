@@ -108,8 +108,9 @@ namespace Pihkura.Camera.Utils
         /// </summary>
         /// <param name="configuration">Camera configuration containing collision offset and downRay.</param>
         /// <param name="position">Reference to the camera position to adjust.</param>
-        public static void HandleCameraCollision(CameraConfiguration configuration, CameraData data, ref Vector3 position)
+        public static void HandleCameraCollision(CameraConfiguration configuration, CameraData data, ref Vector3 position, out bool isCollision)
         {
+            isCollision = position.y < configuration.downRay.Point.y;
             if (position.y < configuration.downRay.Point.y + configuration.collisionOffset)
             {
                 position.y = configuration.downRay.Point.y + configuration.collisionOffset;

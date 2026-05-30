@@ -30,40 +30,17 @@ namespace Pihkura.Camera.Behaviour
             Vector3 desiredPosition = this.data.origin + offset;
 
             CameraUtils.HandleLOSCorrection(configuration, data, ref desiredPosition, ref offset, ref rotation, this.moving);
+            CameraUtils.HandleCameraCollision(configuration, data, ref desiredPosition, out bool isCollision);
 
             if (Vector3.Distance(this.configuration.forwardRay.Point, this.data.target.position) > 10f)
             {
-                this.data.next.position = Vector3.MoveTowards(this.data.current.position, desiredPosition + (Vector3.up * this.configuration.heightOffset), dt * 400f);
-                CameraUtils.HandleCameraCollision(configuration, data, ref this.data.next.position);
+                Vector3 position = Vector3.MoveTowards(this.data.current.position, desiredPosition + (Vector3.up * this.configuration.heightOffset), dt * 400f);
+                this.data.next.position = position;
             }
             else
             {
-                CameraUtils.HandleCameraCollision(configuration, data, ref desiredPosition);
-
-                Vector3 targetPosition = desiredPosition + (Vector3.up * this.configuration.heightOffset);
-
-                // NOTE:
-                // Full camera Y smoothing feels sluggish and non-responsive.
-                // Instead stabilize ONLY the source height before camera solve.
-                // This removes low-angle micro jitter while preserving responsive camera movement.
-
-                this.data.origin.x = this.data.target.position.x;
-                this.data.origin.z = this.data.target.position.z;
-
-                this.data.origin.y = Mathf.Lerp(
-                    this.data.origin.y,
-                    this.data.target.position.y,
-                    dt * 8f);
-
-                targetPosition = this.data.origin + offset + (Vector3.up * this.configuration.heightOffset);
-
-                this.data.next.position = Vector3.SmoothDamp(
-                    this.data.current.position,
-                    targetPosition,
-                    ref this.data.moveVelocity,
-                    this.configuration.moveSmoothTime,
-                    float.PositiveInfinity,
-                    dt);
+                Vector3 position = Vector3.SmoothDamp(this.data.current.position, desiredPosition + (Vector3.up * this.configuration.heightOffset), ref this.data.moveVelocity, this.configuration.moveSmoothTime, float.PositiveInfinity, dt);
+                this.data.next.position = position;
             }
             float t = 1f - Mathf.Exp(-dt / Mathf.Max(this.configuration.rotSmoothTime, 0.0001f));
             this.data.next.rotation = Quaternion.Slerp(this.data.current.rotation, rotation, t);

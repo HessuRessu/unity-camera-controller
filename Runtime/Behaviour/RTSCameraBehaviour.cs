@@ -43,7 +43,7 @@ namespace Pihkura.Camera.Behaviour
 
             Vector3 desiredPosition = this.data.origin + offset;
             CameraUtils.HandleLOSCorrection(configuration, data, ref desiredPosition, ref offset, ref rotation, this.moving);
-            CameraUtils.HandleCameraCollision(configuration, data, ref desiredPosition);
+            CameraUtils.HandleCameraCollision(configuration, data, ref desiredPosition, out bool isCollision);
 
             // --- Smooth movement & rotation ---
             this.data.next.position = Vector3.SmoothDamp(this.data.current.position, desiredPosition + (Vector3.up * this.configuration.heightOffset), ref this.data.moveVelocity, this.configuration.moveSmoothTime, float.PositiveInfinity, dt);

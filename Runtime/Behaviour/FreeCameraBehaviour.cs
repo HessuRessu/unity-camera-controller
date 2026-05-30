@@ -42,7 +42,7 @@ namespace Pihkura.Camera.Behaviour
 
             // Smooth movement
             data.next.position = desiredPosition; // Vector3.SmoothDamp(data.current.position, desiredPosition, ref data.moveVelocity, configuration.moveSmoothTime, float.PositiveInfinity, dt);
-            CameraUtils.HandleCameraCollision(configuration, data, ref data.next.position);
+            CameraUtils.HandleCameraCollision(configuration, data, ref data.next.position, out bool isCollision);
         }
 
         public override void HandleRotation(float dt)

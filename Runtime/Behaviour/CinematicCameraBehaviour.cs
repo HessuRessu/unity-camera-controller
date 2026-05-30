@@ -49,7 +49,7 @@ namespace Pihkura.Camera.Behaviour
             // Smooth interpolation
             Vector3 smoothedPos = Vector3.Lerp(data.current.position, desiredPosition, dt);
             Quaternion smoothedRot = Quaternion.Slerp(data.current.rotation, desiredRotation, dt);
-            CameraUtils.HandleCameraCollision(configuration, data, ref smoothedPos);
+            CameraUtils.HandleCameraCollision(configuration, data, ref smoothedPos, out bool isCollision);
 
             // Instead of writing to transform directly, update CameraData
             data.next.position = smoothedPos;
