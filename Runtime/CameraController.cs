@@ -4,6 +4,7 @@ using Pihkura.Camera.Control;
 using Pihkura.Camera.Core;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 namespace Pihkura.Camera
 {
@@ -211,7 +212,9 @@ namespace Pihkura.Camera
 
             this.HandleInput();
 
-            this.availabeBehaviours[this.behaviourIndex].HandleZoom(this.dt);
+            if (!EventSystem.current.IsPointerOverGameObject())
+                this.availabeBehaviours[this.behaviourIndex].HandleZoom(this.dt);
+                
             this.availabeBehaviours[this.behaviourIndex].HandleRotation(this.dt);
             this.availabeBehaviours[this.behaviourIndex].HandleMovement(this.dt);
 
