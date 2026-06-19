@@ -151,16 +151,16 @@ namespace Pihkura.Camera.Core
         /// <returns>Clamped position within area bounds.</returns>
         public Vector3 GetBoundedPosition(ref Vector3 position)
         {
-            if (position.x > this.areaBounds.maxBounds.x)
-                position.x = this.areaBounds.maxBounds.x;
-            if (position.z > this.areaBounds.maxBounds.z)
-                position.z = this.areaBounds.maxBounds.z;
-            if (position.x < this.areaBounds.minBounds.x)
-                position.x = this.areaBounds.minBounds.x;
-            if (position.z < this.areaBounds.minBounds.z)
-                position.z = this.areaBounds.minBounds.z;
-            if (position.y < this.areaBounds.minBounds.y)
-                position.y = this.areaBounds.minBounds.y;
+            if (position.x > areaBounds.maxBounds.x)
+                position.x = areaBounds.maxBounds.x;
+            if (position.z > areaBounds.maxBounds.z)
+                position.z = areaBounds.maxBounds.z;
+            if (position.x < areaBounds.minBounds.x)
+                position.x = areaBounds.minBounds.x;
+            if (position.z < areaBounds.minBounds.z)
+                position.z = areaBounds.minBounds.z;
+            if (position.y < areaBounds.minBounds.y)
+                position.y = areaBounds.minBounds.y;
 
             return position;
         }
@@ -172,6 +172,6 @@ namespace Pihkura.Camera.Core
         /// <param name="target">Target position to measure distance to.</param>
         /// <returns>A value between 0.1 and 1.0 representing the distance ratio.</returns>
         public float GetDistanceRatio(Vector3 position, Vector3 target) =>
-            Mathf.Clamp((Vector3.Distance(position, target) - this.minDistance) / (this.maxDistance - this.minDistance), 0.1f, 1f);
+            Mathf.Clamp((Vector3.Distance(position, target) - minDistance) / (maxDistance - minDistance), 0.1f, 1f);
     }
 }

@@ -45,12 +45,12 @@ namespace Pihkura.Camera.Behaviour
         /// <param name="target">The target transform (if applicable).</param>
         public virtual bool Initialize(Transform target)
         {
-            this.data.target = target;
-            this.data.yaw = this.data.targetYaw = this.data.current.eulerAngles.y;
-            this.data.pitch = this.data.targetPitch = this.data.current.eulerAngles.x;
-            this.data.effectivePitch = this.data.pitch;
-            this.data.yawVelocity = 0f;
-            this.data.pitchVelocity = 0f;
+            data.target = target;
+            data.yaw = data.targetYaw = data.current.eulerAngles.y;
+            data.pitch = data.targetPitch = data.current.eulerAngles.x;
+            data.effectivePitch = data.pitch;
+            data.yawVelocity = 0f;
+            data.pitchVelocity = 0f;
             return true;
         }
 
@@ -65,13 +65,13 @@ namespace Pihkura.Camera.Behaviour
                 if (Mathf.Abs(data.rotationInputY) > 0.0001f)
                 {
                     data.targetYaw += data.rotationInputY * configuration.yawSpeed * dt;
-                    this.moving = true;
+                    moving = true;
                 }
                 if (Mathf.Abs(data.rotationInputX) > 0.0001f)
                 {
                     data.targetPitch -= data.rotationInputX * configuration.pitchSpeed * dt;
                     data.targetPitch = Mathf.Clamp(data.targetPitch, configuration.minPitch, configuration.maxPitch);
-                    this.moving = true;
+                    moving = true;
                 }
             }
 
@@ -109,7 +109,7 @@ namespace Pihkura.Camera.Behaviour
                     data.distance -= data.zoomInput * configuration.zoomSpeed * data.speedRatio;
 
                 data.distance = Mathf.Clamp(data.distance, configuration.minDistance, configuration.maxDistance);
-                this.moving = true;
+                moving = true;
             }
         }
 
@@ -125,8 +125,8 @@ namespace Pihkura.Camera.Behaviour
         /// </summary>
         public virtual void OnUpdateBegin()
         {
-            this.data.speedRatio = this.configuration.GetDistanceRatio(this.data.current.position, this.data.origin);
-            this.moving = false;
+            data.speedRatio = configuration.GetDistanceRatio(data.current.position, data.origin);
+            moving = false;
         }
 
         /// <summary>

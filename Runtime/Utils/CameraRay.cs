@@ -46,7 +46,7 @@ namespace Pihkura.Camera.Utils
         public CameraRay(Vector3 origin, Vector3 direction, float maxDistance)
         {
             this.maxDistance = maxDistance;
-            this.ray = new Ray(origin + this.offset, direction);
+            this.ray = new Ray(origin + offset, direction);
         }
 
         /// <summary>
@@ -58,21 +58,21 @@ namespace Pihkura.Camera.Utils
         /// <returns>The hit point or the point at max distance if no collision occurs.</returns>
         public Vector3 Cast(Vector3 origin, Vector3 direction)
         {
-            this.ray.origin = origin + this.offset;
-            this.ray.direction = direction;
+            ray.origin = origin + offset;
+            ray.direction = direction;
 
-            if (Physics.Raycast(this.ray, out this.hit, this.maxDistance, this.mask))
+            if (Physics.Raycast(ray, out hit, maxDistance, mask))
             {
-                this.Point = this.hit.point;
-                this.IsHit = true;
+                Point = hit.point;
+                IsHit = true;
             }
             else
             {
-                this.Point = this.ray.GetPoint(this.maxDistance);
-                this.IsHit = false;
+                Point = ray.GetPoint(maxDistance);
+                IsHit = false;
             }
 
-            return this.Point;
+            return Point;
         }
 
         /// <summary>
@@ -82,9 +82,9 @@ namespace Pihkura.Camera.Utils
         /// <param name="max">Maximum Y value.</param>
         public void ClampHeight(float min, float max)
         {
-            Vector3 clamped = this.Point;
+            Vector3 clamped = Point;
             clamped.y = Mathf.Clamp(clamped.y, min, max);
-            this.Point = clamped;
+            Point = clamped;
         }
     }
 }

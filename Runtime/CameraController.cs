@@ -20,7 +20,7 @@ namespace Pihkura.Camera
 
         public static bool Push(object owner)
         {
-            return _owners.Add(owner); // false jos oli jo olemassa
+            return _owners.Add(owner);
         }
 
         public static bool Pop(object owner)
@@ -94,7 +94,7 @@ namespace Pihkura.Camera
         /// <summary>
         /// Time Delta.
         /// </summary>
-        [System.NonSerialized] public float dt;
+        [System.NonSerialized] public float deltaTime;
 
         /// <summary>
         /// Ensures all required variables are set.
@@ -102,10 +102,10 @@ namespace Pihkura.Camera
         private void EnsureInternalAssets()
         {
 #if (ENABLE_INPUT_SYSTEM)
-            if (this.configuration == null)
-                this.configuration = new();
-            if (this.configuration.inputMap == null)
-                this.configuration.inputMap = AssetResolver.LoadAsset<InputActionAsset>("CameraInputAsset");
+            if (configuration == null)
+                configuration = new();
+            if (configuration.inputMap == null)
+                configuration.inputMap = AssetResolver.LoadAsset<InputActionAsset>("CameraInputAsset");
 #endif
         }
 
@@ -113,7 +113,7 @@ namespace Pihkura.Camera
         /// Unity On Validate callback: ensures all internal variables are set.
         /// </summary>
         void OnValidate()
-            => this.EnsureInternalAssets();
+            => EnsureInternalAssets();
 
 
         /// <summary>
@@ -121,8 +121,8 @@ namespace Pihkura.Camera
         /// </summary>
         private void Awake()
         {
-            this.inputControlManager = BaseInputControlManager.Initialize(this.configuration);
-            this.EnsureInternalAssets();
+            inputControlManager = BaseInputControlManager.Initialize(configuration);
+            EnsureInternalAssets();
 
             if (!useSingleton)
                 return;
@@ -132,7 +132,7 @@ namespace Pihkura.Camera
             }
             else
             {
-                Destroy(this.gameObject);
+                Destroy(gameObject);
             }
         }
 
@@ -141,16 +141,16 @@ namespace Pihkura.Camera
         /// </summary>
         void Start()
         {
-            this.data = new CameraData(0, 30);
-            this.availabeBehaviours = new ICameraBehaviour[4] {
-                    new RTSCameraBehaviour(this.configuration, this.data),
-                    new FollowingCameraBehaviour(this.configuration, this.data),
-                    new FreeCameraBehaviour(this.configuration, this.data),
-                    new CinematicCameraBehaviour(this.configuration, this.data)
+            data = new CameraData(0, 30);
+            availabeBehaviours = new ICameraBehaviour[4] {
+                    new RTSCameraBehaviour(configuration, data),
+                    new FollowingCameraBehaviour(configuration, data),
+                    new FreeCameraBehaviour(configuration, data),
+                    new CinematicCameraBehaviour(configuration, data)
                 };
-            this.data.Update(this.transform);
-            this.UpdateRays();
-            this.SetBehaviour(this.behaviourIndex, null);
+            data.Update(transform);
+            UpdateRays();
+            SetBehaviour(behaviourIndex, null);
         }
 
         /// <summary>
@@ -158,44 +158,50 @@ namespace Pihkura.Camera
         /// </summary>
         public void SetPosition(Vector3 position, float distance = 10f)
         {
-            this.transform.position = position;
-            this.data.distance = distance;
-            this.SynchronizeDataWithTransform();
-            this.UpdateRays();
-            this.availabeBehaviours[this.behaviourIndex].Initialize(this.target);
-            this.UpdateRays();
+            transform.position = position;
+            data.distance = distance;
+            SynchronizeDataWithTransform();
+            UpdateRays();
+            availabeBehaviours[behaviourIndex].Initialize(target);
+            UpdateRays();
 
-            Vector3 offsetPosition = this.transform.position;
-            offsetPosition.y = this.configuration.groundRay.Point.y + this.configuration.minDistance;
-            this.transform.position = offsetPosition;
-            this.SynchronizeDataWithTransform();
-            this.UpdateRays();
+            Vector3 offsetPosition = transform.position;
+            offsetPosition.y = configuration.groundRay.Point.y + configuration.minDistance;
+            transform.position = offsetPosition;
+            SynchronizeDataWithTransform();
+            UpdateRays();
         }
 
+        /// <summary>
+        /// Set camera position, rotation and updates rays.
+        /// </summary>
         public void SetPosition(Vector3 position, Quaternion rotation)
         {
-            this.transform.SetPositionAndRotation(position, rotation);
-            this.SynchronizeDataWithTransform();
-            this.UpdateRays();
-            this.data.distance = Vector3.Distance(position, this.configuration.forwardRay.Point);
-            this.availabeBehaviours[this.behaviourIndex].Initialize(this.target);
-            this.SynchronizeDataWithTransform();
-            this.UpdateRays();
+            transform.SetPositionAndRotation(position, rotation);
+            SynchronizeDataWithTransform();
+            UpdateRays();
+            data.distance = Vector3.Distance(position, configuration.forwardRay.Point);
+            availabeBehaviours[behaviourIndex].Initialize(target);
+            SynchronizeDataWithTransform();
+            UpdateRays();
         }
 
+        /// <summary>
+        /// Synchronize CameraData with current transform.
+        /// </summary>
         private void SynchronizeDataWithTransform()
         {
-            this.data.current.Update(this.transform);
-            this.data.next.Update(this.transform);
-            this.data.yaw = this.data.targetYaw = this.data.current.eulerAngles.y;
-            this.data.pitch = this.data.targetPitch = this.data.current.eulerAngles.x;
-            this.data.effectivePitch = this.data.pitch;
-            this.data.yawVelocity = 0f;
-            this.data.pitchVelocity = 0f;
-            this.data.moveVelocity = Vector3.zero;
-            this.configuration.autoPitch = 0f;
-            this.data.autoPitch = 0f;
-            this.data.losTimer = 0f;
+            data.current.Update(transform);
+            data.next.Update(transform);
+            data.yaw = data.targetYaw = data.current.eulerAngles.y;
+            data.pitch = data.targetPitch = data.current.eulerAngles.x;
+            data.effectivePitch = data.pitch;
+            data.yawVelocity = 0f;
+            data.pitchVelocity = 0f;
+            data.moveVelocity = Vector3.zero;
+            configuration.autoPitch = 0f;
+            data.autoPitch = 0f;
+            data.losTimer = 0f;
         }
 
         /// <summary>
@@ -204,32 +210,32 @@ namespace Pihkura.Camera
         /// </summary>
         void LateUpdate()
         {
-            this.dt = Time.unscaledDeltaTime;
-            this.OnUpdateBegin();
-            this.UpdateRays();
-            if (this.useCameraInputGate && InputGate.HasFocus)
+            deltaTime = Time.unscaledDeltaTime;
+            OnUpdateBegin();
+            UpdateRays();
+            if (useCameraInputGate && InputGate.HasFocus)
                 return;
 
-            this.HandleInput();
+            HandleInput();
 
             if (!EventSystem.current.IsPointerOverGameObject())
-                this.availabeBehaviours[this.behaviourIndex].HandleZoom(this.dt);
+                availabeBehaviours[behaviourIndex].HandleZoom(deltaTime);
                 
-            this.availabeBehaviours[this.behaviourIndex].HandleRotation(this.dt);
-            this.availabeBehaviours[this.behaviourIndex].HandleMovement(this.dt);
+            availabeBehaviours[behaviourIndex].HandleRotation(deltaTime);
+            availabeBehaviours[behaviourIndex].HandleMovement(deltaTime);
 
-            this.OnUpdateCompleted();
+            OnUpdateCompleted();
         }
 
         /// <summary>
         /// Handles camera controller enable event.
         /// </summary>
-        void OnEnable() => this.inputControlManager.OnEnable();
+        void OnEnable() => inputControlManager.OnEnable();
 
         /// <summary>
         /// Handles camera controller disable event.
         /// </summary>
-        void OnDisable() => this.inputControlManager.OnDisable();
+        void OnDisable() => inputControlManager.OnDisable();
 
         /// <summary>
         /// Switches to camera behaviour in the list defined by index.
@@ -238,13 +244,13 @@ namespace Pihkura.Camera
         /// </summary>
         public void SetBehaviour(int index, Transform target)
         {
-            if (index >= this.availabeBehaviours.Length || index < 0)
+            if (index >= availabeBehaviours.Length || index < 0)
                 return;
             if (target != null)
                 this.target = target;
-            this.behaviourIndex = index;
-            this.data.current.Update(this.transform);
-            this.availabeBehaviours[this.behaviourIndex].Initialize(this.target);
+            behaviourIndex = index;
+            data.current.Update(transform);
+            availabeBehaviours[behaviourIndex].Initialize(target);
         }
 
         /// <summary>
@@ -253,16 +259,16 @@ namespace Pihkura.Camera
         /// </summary>
         public void RotateBehaviour()
         {
-            if (this.behaviourIndex != -1)
-                this.availabeBehaviours[this.behaviourIndex].Release();
+            if (behaviourIndex != -1)
+                availabeBehaviours[behaviourIndex].Release();
 
-            this.behaviourIndex++;
-            if (this.behaviourIndex >= this.availabeBehaviours.Length)
-                this.behaviourIndex = 0;
+            behaviourIndex++;
+            if (behaviourIndex >= availabeBehaviours.Length)
+                behaviourIndex = 0;
 
-            this.data.current.Update(this.transform);
-            if (!this.availabeBehaviours[this.behaviourIndex].Initialize(this.target))
-                this.RotateBehaviour();
+            data.current.Update(transform);
+            if (!availabeBehaviours[behaviourIndex].Initialize(target))
+                RotateBehaviour();
         }
 
         /// <summary>
@@ -271,9 +277,9 @@ namespace Pihkura.Camera
         /// </summary>
         private void OnUpdateCompleted()
         {
-            this.availabeBehaviours[this.behaviourIndex].OnUpdateCompleted();
-            this.transform.position = this.data.next.position;
-            this.transform.rotation = this.data.next.rotation;
+            availabeBehaviours[behaviourIndex].OnUpdateCompleted();
+            transform.position = data.next.position;
+            transform.rotation = data.next.rotation;
         }
 
         /// <summary>
@@ -281,8 +287,8 @@ namespace Pihkura.Camera
         /// </summary>
         private void OnUpdateBegin()
         {
-            this.data.Update(this.transform);
-            this.availabeBehaviours[this.behaviourIndex].OnUpdateBegin();
+            data.Update(transform);
+            availabeBehaviours[behaviourIndex].OnUpdateBegin();
         }
 
         /// <summary>
@@ -291,10 +297,10 @@ namespace Pihkura.Camera
         /// </summary>
         private void UpdateRays()
         {
-            this.configuration.forwardRay.Cast(this.transform.position, this.transform.forward);
-            this.configuration.downRay.Cast(this.transform.position, -Vector3.up);
-            this.configuration.downRay.ClampHeight(0f, 1000f);
-            this.configuration.groundRay.Cast(this.data.origin, -Vector3.up);
+            configuration.forwardRay.Cast(transform.position, transform.forward);
+            configuration.downRay.Cast(transform.position, -Vector3.up);
+            configuration.downRay.ClampHeight(0f, 1000f);
+            configuration.groundRay.Cast(data.origin, -Vector3.up);
         }
 
         /// <summary>
@@ -303,11 +309,11 @@ namespace Pihkura.Camera
         /// </summary>
         private void HandleInput()
         {
-            this.inputControlManager.Move(this.data);
-            this.inputControlManager.Zoom(this.data);
-            this.inputControlManager.Rotate(this.data);
-            if (this.useInputBehaviourRotation)
-                this.inputControlManager.Control(this);
+            inputControlManager.Move(data);
+            inputControlManager.Zoom(data);
+            inputControlManager.Rotate(data);
+            if (useInputBehaviourRotation)
+                inputControlManager.Control(this);
         }
     }
 }

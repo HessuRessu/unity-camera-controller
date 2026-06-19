@@ -9,26 +9,26 @@ namespace Pihkura.Camera.Control
     public class NewInputControlManager : BaseInputControlManager
     {
 
-        private InputAction moveAction;
-        private InputAction zoomAction;
-        private InputAction mouseRotateAction;
-        private InputAction keyboardRotateAction;
-        private InputAction targetActions;
+        private InputAction _moveAction;
+        private InputAction _zoomAction;
+        private InputAction _mouseRotateAction;
+        private InputAction _keyboardRotateAction;
+        private InputAction _targetActions;
 
         public NewInputControlManager(CameraConfiguration configuration)
             : base(configuration)
         {
-            this.moveAction = configuration.inputMap.FindAction("Move");
-            this.zoomAction = configuration.inputMap.FindAction("Zoom");
-            this.mouseRotateAction = configuration.inputMap.FindAction("MouseRotate");
-            this.keyboardRotateAction = configuration.inputMap.FindAction("KeyboardRotate");
-            this.targetActions = configuration.inputMap.FindAction("Target");
+            _moveAction = configuration.inputMap.FindAction("Move");
+            _zoomAction = configuration.inputMap.FindAction("Zoom");
+            _mouseRotateAction = configuration.inputMap.FindAction("MouseRotate");
+            _keyboardRotateAction = configuration.inputMap.FindAction("KeyboardRotate");
+            _targetActions = configuration.inputMap.FindAction("Target");
         }
 
         public override void Move(CameraData data)
         {
             // Movement input
-            Vector2 value = this.moveAction.ReadValue<Vector2>();
+            Vector2 value = _moveAction.ReadValue<Vector2>();
             CameraUtils.SmoothInput(value.x, ref data.movementInputX);
             CameraUtils.SmoothInput(value.y, ref data.movementInputY);
         }
@@ -36,7 +36,7 @@ namespace Pihkura.Camera.Control
         public override void Zoom(CameraData data)
         {
             // We need to multiply this by 0.001 because new input system returns way too high values for zooming.
-            Vector2 value = this.zoomAction.ReadValue<Vector2>() * 0.001f;
+            Vector2 value = _zoomAction.ReadValue<Vector2>() * 0.001f;
             CameraUtils.SmoothInput(value.y, ref data.zoomInput, 8f);
 
         }
@@ -47,7 +47,7 @@ namespace Pihkura.Camera.Control
             data.rotationInputY = 0f;
 
             // Mouse rotation.
-            Vector2 mouseValue = this.mouseRotateAction.ReadValue<Vector2>();
+            Vector2 mouseValue = _mouseRotateAction.ReadValue<Vector2>();
             if (Mathf.Abs(mouseValue.y) > 0.0001f)
             {
                 if (Mathf.Abs(mouseValue.y) > 2f)
@@ -62,7 +62,7 @@ namespace Pihkura.Camera.Control
             }
 
             // Keyboard rotation.
-            Vector2 keyboardValue = this.keyboardRotateAction.ReadValue<Vector2>();
+            Vector2 keyboardValue = _keyboardRotateAction.ReadValue<Vector2>();
             if (Mathf.Abs(keyboardValue.x) > 0.0001f)
             {
                 if (keyboardValue.x < 0f)
@@ -75,13 +75,13 @@ namespace Pihkura.Camera.Control
 
         public override void Control(CameraController controller)
         {
-            if (this.targetActions.triggered && this.targetActions.ReadValue<float>() > 0f)
+            if (_targetActions.triggered && _targetActions.ReadValue<float>() > 0f)
                 controller.RotateBehaviour();
         }
 
-        public override void OnEnable() => this.configuration.inputMap.Enable();
+        public override void OnEnable() => configuration.inputMap.Enable();
 
-        public override void OnDisable() => this.configuration.inputMap.Disable();
+        public override void OnDisable() => configuration.inputMap.Disable();
 
     }
 

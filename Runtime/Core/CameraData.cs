@@ -143,10 +143,10 @@ namespace Pihkura.Camera.Core
         /// <param name="startPitch">Initial pitch angle in degrees.</param>
         public CameraData(float startYaw = 0f, float startPitch = 30f)
         {
-            this.yaw = this.targetYaw = startYaw;
-            this.pitch = this.targetPitch = startPitch;
-            this.current = new CameraTransform();
-            this.next = new CameraTransform();
+            yaw = targetYaw = startYaw;
+            pitch = targetPitch = startPitch;
+            current = new CameraTransform();
+            next = new CameraTransform();
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace Pihkura.Camera.Core
         /// <param name="transform">The Unity Transform from which to update.</param>
         public void Update(Transform transform)
         {
-            this.current.Update(transform);
+            current.Update(transform);
         }
     }
 }

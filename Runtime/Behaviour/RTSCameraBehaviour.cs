@@ -12,44 +12,46 @@ namespace Pihkura.Camera.Behaviour
             : base(configuration, data) { }
 
 
+        /// <inheritdoc/>
         public override bool Initialize(Transform target)
         {
-            this.configuration.heightOffset = 0f;
-            this.data.origin = this.configuration.forwardRay.Point;
+            configuration.heightOffset = 0f;
+            data.origin = configuration.forwardRay.Point;
             return base.Initialize(target);
         }
 
+        /// <inheritdoc/>
         public override void HandleMovement(float dt)
         {
-            this.data.effectivePitch = this.data.pitch + this.configuration.autoPitch;
+            data.effectivePitch = data.pitch + configuration.autoPitch;
 
-            Quaternion rotation = Quaternion.Euler(this.data.effectivePitch, this.data.yaw, 0f);
-            Vector3 offset = rotation * new Vector3(0f, 0f, -this.data.distance);
+            Quaternion rotation = Quaternion.Euler(data.effectivePitch, data.yaw, 0f);
+            Vector3 offset = rotation * new Vector3(0f, 0f, -data.distance);
 
-            if (this.data.movementInputY != 0f)
+            if (data.movementInputY != 0f)
             {
-                this.data.origin += this.configuration.movementSpeed * this.data.speedRatio * this.data.movementInputY * new Vector3(this.data.current.forward.x, 0f, this.data.current.forward.z).normalized * dt;
-                this.moving = true;
+                data.origin += configuration.movementSpeed * data.speedRatio * data.movementInputY * new Vector3(data.current.forward.x, 0f, data.current.forward.z).normalized * dt;
+                moving = true;
             }
-            if (this.data.movementInputX != 0f)
+            if (data.movementInputX != 0f)
             {
-                this.data.origin += this.configuration.movementSpeed * this.data.speedRatio * this.data.movementInputX * this.data.current.right.normalized * dt;
-                this.moving = true;
+                data.origin += configuration.movementSpeed * data.speedRatio * data.movementInputX * data.current.right.normalized * dt;
+                moving = true;
             }
 
-            // this.data.origin.y = Terrain.activeTerrain.SampleHeight(this.data.origin);
-            this.data.origin.y = this.configuration.groundRay.Point.y;
-            this.data.origin = this.configuration.GetBoundedPosition(ref this.data.origin);
+            // data.origin.y = Terrain.activeTerrain.SampleHeight(data.origin);
+            data.origin.y = configuration.groundRay.Point.y;
+            data.origin = configuration.GetBoundedPosition(ref data.origin);
 
-            Vector3 desiredPosition = this.data.origin + offset;
-            CameraUtils.HandleLOSCorrection(configuration, data, ref desiredPosition, ref offset, ref rotation, this.moving);
-            CameraUtils.HandleCameraCollision(configuration, data, ref desiredPosition, out bool isCollision);
+            Vector3 desiredPosition = data.origin + offset;
+            CameraUtils.HandleLOSCorrection(configuration, data, ref desiredPosition, ref offset, ref rotation, moving);
+            CameraUtils.HandleCameraCollision(configuration, data, ref desiredPosition, out _);
 
             // --- Smooth movement & rotation ---
-            this.data.next.position = Vector3.SmoothDamp(this.data.current.position, desiredPosition + (Vector3.up * this.configuration.heightOffset), ref this.data.moveVelocity, this.configuration.moveSmoothTime, float.PositiveInfinity, dt);
+            data.next.position = Vector3.SmoothDamp(data.current.position, desiredPosition + (Vector3.up * configuration.heightOffset), ref data.moveVelocity, configuration.moveSmoothTime, float.PositiveInfinity, dt);
 
-            float t = 1f - Mathf.Exp(-dt / Mathf.Max(this.configuration.rotSmoothTime, 0.0001f));
-            this.data.next.rotation = Quaternion.Slerp(this.data.current.rotation, rotation, t);
+            float t = 1f - Mathf.Exp(-dt / Mathf.Max(configuration.rotSmoothTime, 0.0001f));
+            data.next.rotation = Quaternion.Slerp(data.current.rotation, rotation, t);
         }
     }
 }

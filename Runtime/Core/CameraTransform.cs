@@ -40,11 +40,11 @@ namespace Pihkura.Camera.Core
         /// <param name="transform">The Unity Transform to read from.</param>
         public void Update(Transform transform)
         {
-            this.position = transform.position;
-            this.rotation = transform.rotation;
-            this.eulerAngles = transform.eulerAngles;
-            this.forward = transform.forward;
-            this.right = transform.right;
+            position = transform.position;
+            rotation = transform.rotation;
+            eulerAngles = transform.eulerAngles;
+            forward = transform.forward;
+            right = transform.right;
         }
 
         /// <summary>
@@ -53,8 +53,8 @@ namespace Pihkura.Camera.Core
         /// <param name="transform">The Unity Transform to update.</param>
         public void ApplyTo(Transform transform)
         {
-            transform.position = this.position;
-            transform.rotation = this.rotation;
+            transform.position = position;
+            transform.rotation = rotation;
         }
     }
 }

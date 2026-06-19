@@ -14,6 +14,7 @@ namespace Pihkura.Camera.Behaviour
         public FreeCameraBehaviour(CameraConfiguration configuration, CameraData data)
             : base(configuration, data) { }
 
+        /// <inheritdoc/>
         public override bool Initialize(Transform target)
         {
             // Initialize rotation values based on current camera transform
@@ -24,27 +25,29 @@ namespace Pihkura.Camera.Behaviour
             return base.Initialize(target);
         }
 
+        /// <inheritdoc/>
         public override void HandleMovement(float dt)
         {
             Vector3 move = Vector3.zero;
 
             if (Mathf.Abs(data.movementInputY) > 0.0001f)
-                move += this.configuration.movementSpeed * this.data.speedRatio * this.data.movementInputY * this.data.current.forward.normalized * dt;
+                move += configuration.movementSpeed * data.speedRatio * data.movementInputY * data.current.forward.normalized * dt;
             if (Mathf.Abs(data.movementInputX) > 0.0001f)
-                move += this.configuration.movementSpeed * this.data.speedRatio * this.data.movementInputX * this.data.current.right.normalized * dt;
+                move += configuration.movementSpeed * data.speedRatio * data.movementInputX * data.current.right.normalized * dt;
 
             Vector3 desiredPosition = data.current.position + move;
 
             // Optional: clamp to area bounds if defined
             desiredPosition = configuration.GetBoundedPosition(ref desiredPosition);
-            if (desiredPosition.y - this.configuration.groundRay.Point.y > this.configuration.maxDistance)
-                desiredPosition.y = this.configuration.groundRay.Point.y + this.configuration.maxDistance;
+            if (desiredPosition.y - configuration.groundRay.Point.y > configuration.maxDistance)
+                desiredPosition.y = configuration.groundRay.Point.y + configuration.maxDistance;
 
             // Smooth movement
             data.next.position = desiredPosition; // Vector3.SmoothDamp(data.current.position, desiredPosition, ref data.moveVelocity, configuration.moveSmoothTime, float.PositiveInfinity, dt);
             CameraUtils.HandleCameraCollision(configuration, data, ref data.next.position, out bool isCollision);
         }
 
+        /// <inheritdoc/>
         public override void HandleRotation(float dt)
         {
             if (data.rotationInputX != 0f || data.rotationInputY != 0f)
@@ -52,13 +55,13 @@ namespace Pihkura.Camera.Behaviour
                 if (Mathf.Abs(data.rotationInputY) > 0.0001f)
                 {
                     data.targetYaw += data.rotationInputY * configuration.yawSpeed * dt;
-                    this.moving = true;
+                    moving = true;
                 }
                 if (Mathf.Abs(data.rotationInputX) > 0.0001f)
                 {
                     data.targetPitch -= data.rotationInputX * configuration.pitchSpeed * dt;
                     // data.targetPitch = Mathf.Clamp(data.targetPitch, configuration.minPitch, configuration.maxPitch); // We wont be clamping in free camera mode.
-                    this.moving = true;
+                    moving = true;
                 }
             }
 
@@ -83,18 +86,20 @@ namespace Pihkura.Camera.Behaviour
             data.next.rotation = Quaternion.Euler(data.pitch, data.yaw, 0f);
         }
 
-        public override void HandleZoom(float dt)
-        {
-        }
+        /// <inheritdoc/>
+        public override void HandleZoom(float dt) { }
 
+        /// <inheritdoc/>
         public override void OnUpdateBegin()
         {
-            this.data.origin = this.configuration.downRay.Point;
-            this.data.speedRatio = this.configuration.GetDistanceRatio(this.data.current.position, this.data.origin);
+            data.origin = configuration.downRay.Point;
+            data.speedRatio = configuration.GetDistanceRatio(data.current.position, data.origin);
         }
 
+        /// <inheritdoc/>
         public override void OnUpdateCompleted() { }
 
+        /// <inheritdoc/>
         public override void Release() { }
     }
 }

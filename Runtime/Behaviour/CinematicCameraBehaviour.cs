@@ -20,6 +20,7 @@ namespace Pihkura.Camera.Behaviour
         {
         }
 
+        /// <inheritdoc/>
         public override bool Initialize(Transform target)
         {
             if (target == null)
@@ -31,6 +32,7 @@ namespace Pihkura.Camera.Behaviour
             return base.Initialize(target);
         }
 
+        /// <inheritdoc/>
         public override void HandleMovement(float dt)
         {
             // Slowly orbit around target
@@ -58,6 +60,7 @@ namespace Pihkura.Camera.Behaviour
             data.next.right = smoothedRot * Vector3.right;
         }
 
+        /// <inheritdoc/>
         public override void HandleRotation(float dt)
         {
             // Rotation handled in HandleMovement
