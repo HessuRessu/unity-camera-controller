@@ -36,7 +36,7 @@ namespace Pihkura.Camera.Behaviour
 
             if (Vector3.Distance(configuration.forwardRay.Point, data.target.position) > 10f)
             {
-                Vector3 position = Vector3.MoveTowards(data.current.position, desiredPosition + (Vector3.up * configuration.heightOffset), dt * 400f);
+                Vector3 position = Vector3.MoveTowards(data.current.position, desiredPosition + (Vector3.up * configuration.heightOffset), dt * configuration.movementSpeed * data.speedRatio);
                 data.next.position = position;
             }
             else
